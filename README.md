@@ -1,1 +1,1 @@
-### Frontend for the university event booking app 👩‍💻
+# Frontend for the university event booking app 👩‍💻
