@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="256" height="256" viewBox="0 0 256 256" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Neon gradient -->
+    <linearGradient id="g" x1="32" y1="32" x2="224" y2="224" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF2BD9"/>
+      <stop offset="1" stop-color="#00E5FF"/>
+    </linearGradient>
+
+    <!-- Soft outer glow -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Binder posts -->
+  <g filter="url(#glow)">
+    <circle cx="88" cy="44" r="11" stroke="url(#g)" stroke-width="12" fill="none" stroke-linecap="round"/>
+    <circle cx="168" cy="44" r="11" stroke="url(#g)" stroke-width="12" fill="none" stroke-linecap="round"/>
+  </g>
+  <circle cx="88" cy="44" r="11" stroke="url(#g)" stroke-width="6" fill="none" stroke-linecap="round"/>
+  <circle cx="168" cy="44" r="11" stroke="url(#g)" stroke-width="6" fill="none" stroke-linecap="round"/>
+
+  <!-- Calendar body -->
+  <g filter="url(#glow)">
+    <rect x="28" y="52" width="200" height="168" rx="28" stroke="url(#g)" stroke-width="16" fill="none"/>
+    <line x1="28" y1="96" x2="228" y2="96" stroke="url(#g)" stroke-width="16" stroke-linecap="round"/>
+  </g>
+  <rect x="28" y="52" width="200" height="168" rx="28" stroke="url(#g)" stroke-width="8" fill="none"/>
+  <line x1="28" y1="96" x2="228" y2="96" stroke="url(#g)" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- Check mark -->
+  <g filter="url(#glow)">
+    <path d="M92 148 L120 176 L164 124" stroke="url(#g)" stroke-width="16" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <path d="M92 148 L120 176 L164 124" stroke="url(#g)" stroke-width="8" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
