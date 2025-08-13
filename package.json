@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dpl": "git add . && git commit -m 'auto' && git push -u origin main"
   },
   "dependencies": {
     "vue": "^3.5.18"
