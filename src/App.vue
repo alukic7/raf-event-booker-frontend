@@ -1,3 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Navbar from './components/Navbar.vue'
+</script>
 
-<template></template>
+<template>
+  <main class="font-sans">
+    <Navbar />
+    <RouterView />
+  </main>
+</template>
