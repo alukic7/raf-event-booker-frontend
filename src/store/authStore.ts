@@ -1,4 +1,3 @@
-// /src/store/authStore.ts
 import axios from 'axios'
 import { defineStore } from 'pinia'
 import router from '../router'

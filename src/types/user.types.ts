@@ -1,4 +1,5 @@
 type UserType = 'admin' | 'event_creator'
+type UserStatus = 'active' | 'inactive'
 
 export type User = {
   id: number
@@ -6,4 +7,5 @@ export type User = {
   firstName: string
   lastName: string
   type: UserType
+  status: UserStatus
 }

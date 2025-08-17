@@ -2,7 +2,10 @@
 import axios from 'axios'
 import { onMounted, ref } from 'vue'
 import { handleError } from '../lib/http'
+import { useEventStore } from '../store/eventStore'
 import type { Category } from '../types/category.types'
+
+const eventStore = useEventStore()
 
 const categories = ref<Category[]>([])
 const errorMessage = ref<string | null>(null)
@@ -18,9 +21,17 @@ async function loadCategories() {
   }
 }
 
-onMounted(() => {
-  loadCategories()
-})
+async function showMostViewed() {
+  eventStore.setViewMode('mostViewed')
+  await eventStore.loadMostViewed()
+}
+
+async function showForCategory(id: number) {
+  eventStore.setViewMode('category')
+  await eventStore.loadByCategory(id)
+}
+
+onMounted(loadCategories)
 </script>
 
 <template>
@@ -29,10 +40,13 @@ onMounted(() => {
     class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-60 p-2 shadow"
   >
     <li>
-      <router-link to="" class="text-2xl">The most viewed</router-link>
+      <a class="text-2xl" @click="showMostViewed">The most viewed</a>
     </li>
+
     <li v-for="category in categories" :key="category.id">
-      <a class="text-lg">{{ category.name }}</a>
+      <a @click="showForCategory(category.id)" class="text-lg">{{
+        category.name
+      }}</a>
     </li>
   </ul>
 </template>

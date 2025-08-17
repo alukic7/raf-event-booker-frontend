@@ -22,6 +22,7 @@ async function loadCategories() {
       `http://localhost:3000/categories?pageSize=${pageSize.value}&offset=${offset.value}`
     )
     categories.value = res.data?.data ?? []
+
     currentPage.value = res.data.page ?? 1
     totalPages.value = res.data.pages ?? 1
     errorMessage.value = null
@@ -66,6 +67,7 @@ async function saveCategory() {
   if (!newName.value.trim()) {
     errorMessage.value = 'Name is required'
     setTimeout(() => (errorMessage.value = null), 1500)
+    closeAddModal()
     return
   }
   saving.value = true
@@ -79,6 +81,8 @@ async function saveCategory() {
     closeAddModal()
   } catch (err) {
     errorMessage.value = handleError(err)
+    setTimeout(() => (errorMessage.value = null), 1500)
+    closeAddModal()
   } finally {
     saving.value = false
   }
@@ -105,10 +109,14 @@ function closeEditModal() {
 }
 
 async function saveEditCategory() {
-  if (editingId.value == null) return
+  if (editingId.value == null) {
+    closeEditModal()
+    return
+  }
   if (!editName.value.trim()) {
     errorMessage.value = 'Name is required'
     setTimeout(() => (errorMessage.value = null), 1500)
+    closeEditModal()
     return
   }
   savingEdit.value = true
@@ -125,6 +133,8 @@ async function saveEditCategory() {
     closeEditModal()
   } catch (err) {
     errorMessage.value = handleError(err)
+    setTimeout(() => (errorMessage.value = null), 1500)
+    closeEditModal()
   } finally {
     savingEdit.value = false
   }
@@ -150,7 +160,11 @@ function closeDeleteModal() {
 }
 
 async function confirmDeleteCategory() {
-  if (deletingId.value == null) return
+  if (deletingId.value == null) {
+    errorMessage.value = 'Id is required'
+    setTimeout(() => (errorMessage.value = null), 1500)
+    return
+  }
   deleting.value = true
   try {
     await axios.delete(`http://localhost:3000/categories/${deletingId.value}`, {
@@ -160,8 +174,11 @@ async function confirmDeleteCategory() {
     closeDeleteModal()
   } catch (err) {
     errorMessage.value = handleError(err)
+    closeDeleteModal()
+    setTimeout(() => (errorMessage.value = null), 1500)
   } finally {
     deleting.value = false
+    closeDeleteModal()
   }
 }
 
@@ -250,29 +267,38 @@ onMounted(loadCategories)
         </div>
       </li>
 
-      <li v-if="errorMessage" class="px-4 pb-4">
-        <div role="alert" class="alert alert-error">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            class="h-6 w-6 shrink-0 stroke-current"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>{{ errorMessage }}</span>
-        </div>
-      </li>
+      <transition
+        enter-active-class="transition-opacity duration-300 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-300 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <li v-if="errorMessage" class="px-4 pb-4">
+          <div role="alert" class="alert alert-error">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 shrink-0 stroke-current"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <span>{{ errorMessage }}</span>
+          </div>
+        </li>
+      </transition>
     </ul>
 
     <dialog ref="addModal" class="modal">
       <div class="modal-box">
-        <h3 class="text-lg font-bold mb-3">Add Category</h3>
+        <h3 class="text-lg font-bold mb-3">Add category</h3>
 
         <form class="flex flex-col gap-3" @submit.prevent="saveCategory">
           <input
@@ -309,7 +335,7 @@ onMounted(loadCategories)
 
     <dialog ref="editModal" class="modal">
       <div class="modal-box">
-        <h3 class="text-lg font-bold mb-3">Edit Category</h3>
+        <h3 class="text-lg font-bold mb-3">Edit category</h3>
 
         <form class="flex flex-col gap-3" @submit.prevent="saveEditCategory">
           <input
@@ -351,7 +377,7 @@ onMounted(loadCategories)
 
     <dialog ref="deleteModal" class="modal">
       <div class="modal-box">
-        <h3 class="text-lg font-bold text-red-500">Delete Category</h3>
+        <h3 class="text-lg font-bold text-red-500">Delete category</h3>
         <p class="py-4">
           Are you sure you want to delete
           <strong>{{ deletingName }}</strong
