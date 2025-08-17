@@ -1,3 +1,4 @@
+import type { Category } from './category.types'
 import type { Tag } from './tag.types'
 import type { User } from './user.types'
 
@@ -8,8 +9,9 @@ export type Event = {
   createdAt: string
   eventDate: string
   location: string
+  views: number
   author: User
   tags: Tag[]
-  categoryId: number
+  category: Category
   maxParticipants?: number | null
 }

@@ -51,7 +51,8 @@ async function loadEvents() {
   listLoading.value = true
   try {
     const res = await axios.get(
-      `http://localhost:3000/events?pageSize=${pageSize.value}&offset=${offset.value}`
+      `http://localhost:3000/events?pageSize=${pageSize.value}&offset=${offset.value}`,
+      { withCredentials: true }
     )
     events.value = res.data?.data ?? []
     currentPage.value = res.data?.page ?? 1

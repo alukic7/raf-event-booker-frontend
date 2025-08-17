@@ -1,6 +1,9 @@
 import { OhVueIcon, addIcons } from 'oh-vue-icons'
 import {
   BiCalendarEvent,
+  BiEyeFill,
+  BiHandThumbsDown,
+  BiHandThumbsUp,
   BiPencilSquare,
   BiTrash,
   IoPersonCircleOutline,
@@ -20,7 +23,10 @@ addIcons(
   MdCategoryOutlined,
   LaUsersSolid,
   BiTrash,
-  BiPencilSquare
+  BiPencilSquare,
+  BiEyeFill,
+  BiHandThumbsDown,
+  BiHandThumbsUp
 )
 
 const app = createApp(App)
