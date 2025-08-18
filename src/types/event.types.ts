@@ -13,5 +13,7 @@ export type Event = {
   author: User
   tags: Tag[]
   category: Category
+  likeCount: number
+  dislikeCount: number
   maxParticipants?: number | null
 }
