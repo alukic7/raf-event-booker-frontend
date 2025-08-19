@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import axios from 'axios'
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { handleError } from '../lib/http'
 import { useAuthStore } from '../store/authStore'
@@ -9,13 +9,20 @@ import type { Event } from '../types/event.types'
 import type { ReactionType } from '../types/reaction.type'
 
 const route = useRoute()
-const id = Number(route.params.id)
+const id = ref(Number(route.params.id))
 
 const authStore = useAuthStore()
 const newCommentAuthor = ref('')
 const newCommentContent = ref('')
 
 const event = ref<Event | null>(null)
+const mostReactedEvents = ref<
+  {
+    id: number
+    name: string
+    reactionSum: number
+  }[]
+>()
 const comments = ref<Comment[]>([])
 const currentParticipants = ref(0)
 const errorMessage = ref('')
@@ -58,7 +65,7 @@ function closeAddModal() {
 
 async function loadEvent() {
   try {
-    const res = await axios.get(`http://localhost:3000/events/${id}`)
+    const res = await axios.get(`http://localhost:3000/events/${id.value}`)
     event.value = res.data ?? null
   } catch (error) {
     errorMessage.value = handleError(error)
@@ -71,7 +78,7 @@ async function loadEvent() {
 async function loadComments() {
   try {
     const res = await axios.get(
-      `http://localhost:3000/events/comments/${id}?pageSize=${pageSize.value}&offset=${offset.value}`
+      `http://localhost:3000/events/comments/${id.value}?pageSize=${pageSize.value}&offset=${offset.value}`
     )
     comments.value = res.data?.data ?? []
   } catch (error) {
@@ -84,12 +91,12 @@ async function loadComments() {
 
 async function saveComment() {
   try {
-    await axios.post(`http://localhost:3000/events/comments/${id}`, {
+    await axios.post(`http://localhost:3000/events/comments/${id.value}`, {
       authorName: newCommentAuthor.value,
       content: newCommentContent.value,
     })
     newCommentContent.value = ''
-    newCommentAuthor.value = ''
+    if (!authStore.isLoggedIn) newCommentAuthor.value = ''
     loadComments()
   } catch (error) {
     errorMessage.value = handleError(error)
@@ -101,7 +108,7 @@ async function saveComment() {
 
 async function increaseViewCount() {
   try {
-    await axios.put(`http://localhost:3000/events/viewed/${id}`, null, {
+    await axios.put(`http://localhost:3000/events/viewed/${id.value}`, null, {
       withCredentials: true,
     })
     loadEvent()
@@ -116,7 +123,7 @@ async function increaseViewCount() {
 async function reactToEvent(reaction: ReactionType) {
   try {
     await axios.put(
-      `http://localhost:3000/events/react/${id}`,
+      `http://localhost:3000/events/react/${id.value}`,
       { reactionType: reaction },
       {
         withCredentials: true,
@@ -152,7 +159,7 @@ async function reactToComment(reaction: ReactionType, commentId: number) {
 async function registerForEvent() {
   try {
     await axios.post(
-      `http://localhost:3000/rsvp/${id}`,
+      `http://localhost:3000/rsvp/${id.value}`,
       { email: newEmail.value },
       {
         withCredentials: true,
@@ -172,7 +179,7 @@ async function registerForEvent() {
 
 async function getNumberOfRegistered() {
   try {
-    const res = await axios.get(`http://localhost:3000/rsvp/${id}`)
+    const res = await axios.get(`http://localhost:3000/rsvp/${id.value}`)
     currentParticipants.value = res.data.registered
   } catch (error) {
     errorMessage.value = handleError(error)
@@ -182,17 +189,50 @@ async function getNumberOfRegistered() {
   }
 }
 
+async function getTheMostReactedTo() {
+  try {
+    const res = await axios.get(`http://localhost:3000/events/most-reactions`)
+    mostReactedEvents.value = res.data ?? []
+  } catch (error) {
+    errorMessage.value = handleError(error)
+    setTimeout(() => {
+      errorMessage.value = ''
+    }, 1500)
+  }
+}
+
+watch(
+  () => route.params.id,
+  async newId => {
+    if (!newId) return
+    id.value = Number(newId)
+    await loadEvent()
+    await loadComments()
+    await getNumberOfRegistered()
+  },
+  { immediate: true }
+)
+
 onMounted(async () => {
   if (authStore.isLoggedIn) newCommentAuthor.value = authStore.user?.firstName!
   await Promise.all([loadEvent(), loadComments()])
   increaseViewCount()
   getNumberOfRegistered()
+  getTheMostReactedTo()
 })
 </script>
 
 <template>
   <div class="card w-full bg-base-100 card-xl">
-    <div class="card-body">
+    <div class="card-body relative">
+      <div class="badge badge-accent absolute right-130 top-12">
+        Najvise reakcija
+      </div>
+      <div class="flex gap-2 items-center justify-center ml-180">
+        <button class="btn" v-for="event in mostReactedEvents">
+          <router-link :to="`/event/${event.id}`">{{ event.name }}</router-link>
+        </button>
+      </div>
       <h1 class="card-title text-5xl mb-8">{{ event?.name }}</h1>
       <div class="flex">
         <div class="w-1/2 flex flex-col">
