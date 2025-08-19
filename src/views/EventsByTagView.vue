@@ -67,6 +67,8 @@ onMounted(loadEventsByTag)
       <div class="card-body">
         <h2 class="card-title text-2xl">{{ event.name }}</h2>
         <p>{{ event.description.substring(0, 20) }}...</p>
+        <p>{{ new Date(event.eventDate).toLocaleString() }}</p>
+        <p>{{ event.category.name }}</p>
         <div class="card-actions justify-end">
           <button
             class="btn btn-info"

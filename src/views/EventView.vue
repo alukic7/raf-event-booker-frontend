@@ -23,7 +23,6 @@ const mostReactedEvents = ref<
     reactionSum: number
   }[]
 >()
-const similarEvents = ref<Event | null>(null)
 const comments = ref<Comment[]>([])
 const currentParticipants = ref(0)
 const errorMessage = ref('')
@@ -202,20 +201,6 @@ async function getTheMostReactedTo() {
   }
 }
 
-async function getSimilarEvents() {
-  try {
-    const res = await axios.post(`http://localhost:3000/events/similar`, {
-      tags: event.value?.tags,
-    })
-    similarEvents.value = res.data ?? []
-  } catch (error) {
-    errorMessage.value = handleError(error)
-    setTimeout(() => {
-      errorMessage.value = ''
-    }, 1500)
-  }
-}
-
 watch(
   () => route.params.id,
   async newId => {
@@ -323,10 +308,6 @@ onMounted(async () => {
             >
               Register
             </button>
-          </div>
-
-          <div class="flex gap-2 flex-row items-center">
-            <div v-for="event in similarEvents"></div>
           </div>
         </div>
 
