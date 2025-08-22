@@ -3,5 +3,5 @@
 ## Startup 🚀
 
 ```
-bun install && bun run dev
+bun install && bun run start
 ```
